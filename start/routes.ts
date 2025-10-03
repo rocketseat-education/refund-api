@@ -7,6 +7,7 @@
 |
 */
 
+const ReceiptDownloadsController = () => import('#controllers/receipt_downloads_controller')
 import router from '@adonisjs/core/services/router'
 
 const ReceiptsController = () => import('#controllers/receipts_controller')
@@ -14,3 +15,4 @@ const RefundsController = () => import('#controllers/refunds_controller')
 
 router.resource('refunds', RefundsController).only(['index', 'store', 'show', 'destroy'])
 router.resource('receipts', ReceiptsController).only(['store', 'show', 'destroy'])
+router.get('receipts/download/:id', [ReceiptDownloadsController])
