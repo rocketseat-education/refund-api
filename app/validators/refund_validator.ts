@@ -5,6 +5,13 @@ export const createRefundValidator = vine.compile(
     title: vine.string().trim().minLength(2),
     category: vine.enum(['food', 'hosting', 'transport', 'services', 'other']),
     value: vine.number().positive(),
+    receipt: vine
+      .string()
+      .exists({ table: 'receipts', column: 'id' })
+      .unique(async (db, value) => {
+        const row = await db.from('receipts').where('id', value).whereNotNull('refund_id').first()
+        return row === null
+      }),
   })
 )
 

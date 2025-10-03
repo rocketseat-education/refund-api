@@ -1,3 +1,4 @@
+import Receipt from '#models/receipt'
 import Refund from '#models/refund'
 import {
   CreateRefundValidator,
@@ -8,7 +9,7 @@ import { DateTime } from 'luxon'
 
 export class RefundService {
   async all() {
-    const refunds = await Refund.findManyBy('deleted_at', null)
+    const refunds = await Refund.query().whereNull('deleted_at').preload('receipt')
 
     return { refunds }
   }
@@ -16,11 +17,20 @@ export class RefundService {
   async create(payload: CreateRefundValidator) {
     const refund = await Refund.create(payload)
 
+    const receipt = await Receipt.findOrFail(payload.receipt)
+
+    await refund.related('receipt').save(receipt)
+    await refund.load('receipt')
+
     return { refund }
   }
 
   async findById(payload: ShowRefundValidator) {
-    const refund = await Refund.query().where('id', payload.params.id).whereNull('deleted_at')
+    const refund = await Refund.query()
+      .where('id', payload.params.id)
+      .whereNull('deleted_at')
+      .preload('receipt')
+      .firstOrFail()
 
     return { refund }
   }
@@ -35,6 +45,6 @@ export class RefundService {
 
     await refund.save()
 
-    return { refund }
+    return { message: `refund ${refund.title} deleted succesfully.` }
   }
 }

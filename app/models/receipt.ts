@@ -1,7 +1,9 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeCreate, column } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeCreate, belongsTo, column } from '@adonisjs/lucid/orm'
 import { slugify } from '@adonisjs/lucid-slugify'
 import { randomUUID } from 'node:crypto'
+import Refund from './refund.js'
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 
 export default class Receipt extends BaseModel {
   static selfAssignPrimaryKey = true
@@ -24,6 +26,12 @@ export default class Receipt extends BaseModel {
 
   @column()
   declare path: string
+
+  @column()
+  declare refundId: string | null
+
+  @belongsTo(() => Refund)
+  declare refund: BelongsTo<typeof Refund>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

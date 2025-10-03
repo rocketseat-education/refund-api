@@ -10,6 +10,7 @@ export default class extends BaseSchema {
       table.string('filename').notNullable().unique()
       table.string('path').notNullable().unique()
       table.string('extname').notNullable()
+      table.string('refund_id').references('refunds.id').onDelete('CASCADE')
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').notNullable()
     })

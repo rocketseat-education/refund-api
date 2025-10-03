@@ -31,7 +31,7 @@ export class ReceiptService {
   }
 
   async findById(payload: ShowReceiptValidator) {
-    const receipt = await Receipt.find(payload.params.id)
+    const receipt = await Receipt.findOrFail(payload.params.id)
 
     return { receipt }
   }

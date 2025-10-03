@@ -1,6 +1,9 @@
 import { randomUUID } from 'node:crypto'
 import { DateTime } from 'luxon'
-import { BaseModel, beforeCreate, column } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeCreate, beforeUpdate, column, hasOne } from '@adonisjs/lucid/orm'
+import Receipt from './receipt.js'
+import type { HasOne } from '@adonisjs/lucid/types/relations'
+import { deleteFileFromPath } from '../utils/file.js'
 
 export default class Refund extends BaseModel {
   static selfAssignPrimaryKey = true
@@ -20,6 +23,9 @@ export default class Refund extends BaseModel {
   })
   declare value: number
 
+  @hasOne(() => Receipt)
+  declare receipt: HasOne<typeof Receipt>
+
   @column.dateTime()
   declare deletedAt: DateTime | null
 
@@ -32,5 +38,15 @@ export default class Refund extends BaseModel {
   @beforeCreate()
   static assignUuid(refund: Refund) {
     refund.id = randomUUID()
+  }
+
+  @beforeUpdate()
+  static async removeRelation(refund: Refund) {
+    if (refund.$dirty.deletedAt) {
+      await refund.load('receipt')
+      const receipt = await Receipt.findOrFail(refund.receipt.id)
+
+      await Promise.all([deleteFileFromPath(receipt.path), receipt.delete()])
+    }
   }
 }
