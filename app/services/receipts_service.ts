@@ -4,7 +4,6 @@ import {
   DeleteReceiptValidator,
   ShowReceiptValidator,
 } from '#validators/receipt_validator'
-import app from '@adonisjs/core/services/app'
 import { deleteFileFromPath } from '../utils/file.js'
 
 export class ReceiptService {
@@ -16,14 +15,6 @@ export class ReceiptService {
     )[0]
     receipt.path = payload.receiptFile.filePath ?? payload.receiptFile.tmpPath!
     receipt.extname = payload.receiptFile.extname!
-
-    await receipt.save()
-
-    await payload.receiptFile.move(app.makePath('storage/uploads'), {
-      name: `${receipt.filename}.${receipt.extname}`,
-    })
-
-    receipt.path = payload.receiptFile.filePath!
 
     await receipt.save()
 

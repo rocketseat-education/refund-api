@@ -1,8 +1,9 @@
 import { ReceiptService } from '#services/receipts_service'
 import { handleReceiptDownloadsValidator } from '#validators/receipt_downloads_validator'
+
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
-import app from '@adonisjs/core/services/app'
+import drive from '@adonisjs/drive/services/main'
 
 export default class ReceiptDownloadsController {
   @inject()
@@ -11,11 +12,11 @@ export default class ReceiptDownloadsController {
 
     const result = await receiptService.findById(payload)
 
-    const filePath = app.makePath(result.receipt.path)
-    const generateEtag = true
+    const localDrive = drive.use('fs')
+    const url = await localDrive.getSignedUrl(result.receipt.path, {
+      expiresIn: '1 min',
+    })
 
-    console.log(filePath)
-
-    response.download(filePath, generateEtag)
+    response.redirect(url)
   }
 }
