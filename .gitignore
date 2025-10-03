@@ -1,7 +1,9 @@
 # Dependencies and AdonisJS build
 node_modules
 build
-tmp
+tmp/*
+
+!tmp/.gitkeep
 
 # Secrets
 .env
@@ -25,3 +27,5 @@ yarn-error.log
 .DS_Store
 
 storage/uploads
+
+!storage/uploads/.gitkeep
