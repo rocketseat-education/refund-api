@@ -2,6 +2,7 @@ import Receipt from '#models/receipt'
 import Refund from '#models/refund'
 import {
   CreateRefundValidator,
+  ListRefundValidator,
   ShowRefundValidator,
   SoftDeleteRefundValidator,
 } from '#validators/refund_validator'
@@ -9,8 +10,16 @@ import drive from '@adonisjs/drive/services/main'
 import { DateTime } from 'luxon'
 
 export class RefundService {
-  async all() {
-    const refunds = await Refund.query().whereNull('deleted_at').preload('receipt')
+  async all(payload: ListRefundValidator) {
+    const limit = 10
+    const page = payload.page ?? 1
+    const searchTerm = payload.q
+
+    const refunds = await Refund.query()
+      .whereNull('deleted_at')
+      .if(searchTerm, (query) => query.where('title', searchTerm!))
+      .preload('receipt')
+      .paginate(page, limit)
 
     return { refunds }
   }

@@ -1,6 +1,7 @@
 import { RefundService } from '#services/refunds_service'
 import {
   createRefundValidator,
+  listRefundValidator,
   showRefundValidator,
   softDeleteRefundValidator,
 } from '#validators/refund_validator'
@@ -13,8 +14,12 @@ export default class RefundsController {
   /**
    * Display a list of resource
    */
-  async index({}: HttpContext) {
-    return this.refundService.all()
+  async index({ request }: HttpContext) {
+    const payload = await request.validateUsing(listRefundValidator, {
+      data: request.qs(),
+    })
+
+    return this.refundService.all(payload)
   }
 
   /**

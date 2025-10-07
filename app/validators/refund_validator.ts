@@ -27,6 +27,15 @@ export const showRefundValidator = vine.compile(
 
 export type ShowRefundValidator = Awaited<ReturnType<typeof showRefundValidator.validate>>
 
+export const listRefundValidator = vine.compile(
+  vine.object({
+    page: vine.number().positive().optional(),
+    q: vine.string().trim().optional(),
+  })
+)
+
+export type ListRefundValidator = Awaited<ReturnType<typeof listRefundValidator.validate>>
+
 export const softDeleteRefundValidator = vine.compile(
   vine.object({
     params: vine.object({
