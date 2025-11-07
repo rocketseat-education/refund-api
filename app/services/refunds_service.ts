@@ -17,7 +17,7 @@ export class RefundService {
 
     const refunds = await Refund.query()
       .whereNull('deleted_at')
-      .if(searchTerm, (query) => query.where('title', searchTerm!))
+      .if(searchTerm, (query) => query.whereLike('title', `%${searchTerm}%`))
       .preload('receipt')
       .paginate(page, limit)
 
