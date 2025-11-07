@@ -4,7 +4,7 @@ import {
   DeleteReceiptValidator,
   ShowReceiptValidator,
 } from '#validators/receipt_validator'
-import { deleteFileFromPath } from '../utils/file.js'
+import drive from '@adonisjs/drive/services/main'
 
 export class ReceiptService {
   async create(payload: CreateReceiptValidator) {
@@ -29,8 +29,9 @@ export class ReceiptService {
 
   async delete(payload: DeleteReceiptValidator) {
     const receipt = await Receipt.findOrFail(payload.params.id)
+    const disk = drive.use()
 
-    await Promise.all([deleteFileFromPath(receipt.path), receipt.delete()])
+    await Promise.all([disk.delete(receipt.path), receipt.delete()])
 
     return { message: `receipt ${receipt.filename} deleted succesfully.` }
   }

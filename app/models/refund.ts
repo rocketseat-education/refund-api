@@ -3,7 +3,7 @@ import { DateTime } from 'luxon'
 import { BaseModel, beforeCreate, beforeUpdate, column, hasOne } from '@adonisjs/lucid/orm'
 import Receipt from './receipt.js'
 import type { HasOne } from '@adonisjs/lucid/types/relations'
-import { deleteFileFromPath } from '../utils/file.js'
+import drive from '@adonisjs/drive/services/main'
 
 export default class Refund extends BaseModel {
   static selfAssignPrimaryKey = true
@@ -45,8 +45,9 @@ export default class Refund extends BaseModel {
     if (refund.$dirty.deletedAt) {
       await refund.load('receipt')
       const receipt = await Receipt.findOrFail(refund.receipt.id)
+      const disk = drive.use()
 
-      await Promise.all([deleteFileFromPath(receipt.path), receipt.delete()])
+      await Promise.all([disk.delete(receipt.path), receipt.delete()])
     }
   }
 }
