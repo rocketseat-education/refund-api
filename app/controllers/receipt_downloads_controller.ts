@@ -17,6 +17,6 @@ export default class ReceiptDownloadsController {
       expiresIn: '1 min',
     })
 
-    response.redirect(url)
+    return { url }
   }
 }
