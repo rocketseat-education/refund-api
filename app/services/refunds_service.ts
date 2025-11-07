@@ -25,7 +25,10 @@ export class RefundService {
   }
 
   async create(payload: CreateRefundValidator) {
-    const refund = await Refund.create(payload)
+    const refund = await Refund.create({
+      ...payload,
+      value: payload.value * 100,
+    })
 
     const receipt = await Receipt.findOrFail(payload.receipt)
 
