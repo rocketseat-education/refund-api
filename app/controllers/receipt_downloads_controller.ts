@@ -7,7 +7,7 @@ import drive from '@adonisjs/drive/services/main'
 
 export default class ReceiptDownloadsController {
   @inject()
-  async handle({ request, response }: HttpContext, receiptService: ReceiptService) {
+  async handle({ request }: HttpContext, receiptService: ReceiptService) {
     const payload = await request.validateUsing(handleReceiptDownloadsValidator)
 
     const result = await receiptService.findById(payload)
